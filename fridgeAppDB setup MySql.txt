@@ -1,0 +1,50 @@
+CREATE DATABASE fridgeappdb;
+
+CREATE TABLE users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_name VARCHAR(50) NOT NULL,
+    user_email VARCHAR(255) NOT NULL,
+    user_password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE item_master (
+    item_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_barcode VARCHAR(255) UNIQUE,
+    item_name VARCHAR(255) NOT NULL,
+    item_category VARCHAR(50),
+    item_default_shelf_life INT
+);
+
+CREATE TABLE user_item (
+    user_item_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    user_item_quantity INT NOT NULL,
+    user_item_unit VARCHAR(10),
+    user_item_expiry_date DATE,
+    user_item_added_at DATETIME,
+    user_item_status ENUM('available','finished','expired') DEFAULT 'available',
+
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES item_master(item_id)
+);
+
+CREATE TABLE recipe (
+    recipe_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    recipe_name VARCHAR(255) NOT NULL,
+    recipe_instruction TEXT,
+
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE recipe_ingredient (
+    recipe_ingredient_id INT PRIMARY KEY AUTO_INCREMENT,
+    recipe_id INT NOT NULL,
+    item_id INT NOT NULL,
+    item_quantity INT NOT NULL,
+    item_unit VARCHAR(10),
+
+    FOREIGN KEY (recipe_id) REFERENCES recipe(recipe_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES item_master(item_id)
+);
